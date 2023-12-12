@@ -8,7 +8,7 @@ import IconMoney from "../../assets/img/icon-money.png"
 
 function Home() {
   return (
-    <body>
+    <div>
       <Header />
       <main>
         <div className="hero">
@@ -48,7 +48,7 @@ function Home() {
         </section>
       </main>
       <Footer />
-    </body>
+    </div>
   );
 }
 
