@@ -3,83 +3,87 @@ import Footer from "../../components/footer/footer";
 import './user.css'
 
 import { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { fetchUserData } from './apiData'; 
+import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+import { editUserName, getUserProfile } from "../../components/login-form/userActions";
 
-function User({ dispatch, firstName, lastName }) {
+
+
+
+function User() {
+  
+  const dispatch = useDispatch();
+  const userProfile = useSelector((state) => state.userReducer.userProfile);
+  const [newFirstName, setNewFirstName] = useState("");
+  const [newLastName, setNewLastName] = useState("");
 
   useEffect(() => {
-    dispatch(fetchUserData()); 
+      dispatch(getUserProfile());
   }, [dispatch]);
 
+  const handleEditSave = async () => {
+      if (!userProfile) {
+          // Handle userProfile not being available yet
+          console.log(userProfile,"Cannot access user");
+          return;
+      }
+
+      const fullName = {
+          firstName: newFirstName || userProfile.firstName,
+          lastName: newLastName || userProfile.lastName,
+      };
+      await dispatch(editUserName(fullName));
+      await dispatch(getUserProfile());
+      setNewFirstName("");
+      setNewLastName("");
+  };
+
   const handleEdit = () => {
-    document.getElementById("edit-button").style.display = "none";
-    document.getElementById("edit-section").style.display = "block";
+      document.getElementById("edit-button").style.display = "none";
+      document.getElementById("edit-section").style.display = "block";
   }
 
   const handleEditCancel = () => {
-    document.getElementById("edit-button").style.display = "initial";
-    document.getElementById("edit-section").style.display = "none";
+      document.getElementById("edit-button").style.display = "initial";
+      document.getElementById("edit-section").style.display = "none";
   }
-
-  const handleEditSave = async () => {
-    document.getElementById("edit-button").style.display = "initial";
-    document.getElementById("edit-section").style.display = "none";
     
-    try {
-      const newLastName = document.getElementById("lastNameInput").value;
-      const newFirstName = document.getElementById("firstNameInput").value;
-
-      const token = localStorage.getItem('token');
-  
-      const response = await fetch('http://localhost:3001/api/v1/user', {
-        method: 'PUT', 
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ lastName: newLastName, firstName: newLastName }),
-      });
-  
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Invalid credentials');
-        } else {
-          throw new Error('Server error');
-        }
-      }
-  
-      dispatch(lastName(newLastName));
-      dispatch(firstName(newFirstName));
-      
-  
-    } catch (error) {
-      console.error('API request failed:', error);
-    }
-  };
-
   return (
   <div>
     <Header />
     <main className="main bg-dark">
       <div className="header">
-        <h1>Welcome back<br /><span id="fullName">{firstName}{lastName}</span></h1>
+        <h1>Welcome back<br /><span id="fullName">{"userFullName"}!</span></h1>
         <button className="edit-button" id="edit-button" type="button" onClick={handleEdit}>Edit Name</button>
+        
         <div id="edit-section">
-                    <form name="edit">
-                        <div className="profil-input-wrapper">
-                            <input id="firstNameInput" type="text" placeholder={"firstName"}/>
-                        </div>
-                        <div className="profil-input-wrapper">
-                            <input id="lastNameInput" type="text" placeholder={"lastName"}/>
-                        </div>
-                    </form>
-                    <div className="btn-form">
-                        <button type="submit" className="save-button" onClick={handleEditSave}>Save</button>
-                        <button type="button" className="cancel-button" onClick={handleEditCancel}>Cancel</button>
+                <form name="edit">
+                    <div className="profil-input-wrapper">
+                        <label htmlFor="firstName">First name:</label>
+                        <input
+                            type="text"
+                            id="firstName"
+                            value={newFirstName || userProfile.firstName}
+                            onChange={(e) => setNewFirstName(e.target.value)}
+                        />
                     </div>
-                </div>
+                    <div className="profil-input-wrapper">
+                        <label htmlFor="lastName">Last name:</label>
+                        <input
+                            type="text"
+                            id="lastName"
+                            value={newLastName || userProfile.lastName}
+                            onChange={(e) => setNewLastName(e.target.value)}
+                        />
+                    </div>
+                </form>
+                <div className="btn-form">
+                    <button type="submit" className="save-button" onClick={handleEditSave}>Save</button>
+              <button type="button" className="cancel-button" onClick={handleEditCancel}>Cancel</button>
+          </div>
+        </div>
       </div>
+
       <h2 className="sr-only">Accounts</h2>
       <section className="account">
         <div className="account-content-wrapper">
@@ -117,4 +121,5 @@ function User({ dispatch, firstName, lastName }) {
   )
 }
 
-export default connect()(User);
+export default User;
+

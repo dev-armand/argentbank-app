@@ -1,34 +1,46 @@
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE } from './userActions';
+import {
+  USER_LOGIN_ERROR,
+  USER_LOGIN_SUCCESS,
+  USER_LOGIN_FAILED,
+  USER_LOGOUT,
+  SET_USER_PROFILE,
+} from "./userActions";
 
+// Initial State declaration
 const initialState = {
-  user: null,
-  isLoading: false,
+  userProfile: {},
   error: null,
-  isAuthenticated: false, // Include isAuthenticated in the initial state
 };
 
+// Reducer
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
-    case LOGIN_REQUEST:
+    case USER_LOGIN_SUCCESS:
       return {
         ...state,
-        isLoading: true,
+        userProfile: action.payload,
         error: null,
       };
-    case LOGIN_SUCCESS:
+    case USER_LOGIN_FAILED:
       return {
         ...state,
-        isLoading: false,
-        user: action.payload,
-        isAuthenticated: true, // Update isAuthenticated to true upon successful login
-        error: null,
+        userProfile: "",
+        error: action.payload,
       };
-    case LOGIN_FAILURE:
+    case USER_LOGOUT:
       return {
         ...state,
-        isLoading: false,
-        error: action.error,
-        isAuthenticated: false, // Set isAuthenticated to false on login failure
+        userProfile: "",
+      };
+    case USER_LOGIN_ERROR:
+      return {
+        ...state,
+        userProfile: "",
+      };
+    case SET_USER_PROFILE:
+      return {
+        ...state,
+        userProfile: action.payload,
       };
     default:
       return state;

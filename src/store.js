@@ -1,7 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import userReducer from './components/login-form/userReducer';
-import firstNameReducer from './pages/user/firstName';
-import lastNameReducer from './pages/user/lastName';
+import {firstNameReducer} from './pages/user/firstName';
+import {lastNameReducer} from './pages/user/lastName';
 
 // Create reducers
 const rootReducer = combineReducers({

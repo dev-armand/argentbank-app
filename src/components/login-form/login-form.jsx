@@ -1,7 +1,7 @@
 // Login component
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { login } from './userActions';
+import { userLogin } from './userActions';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -15,7 +15,7 @@ const Login = () => {
     e.preventDefault();
     console.log(email, password);
     try {
-      const success = await dispatch(login(email, password));
+      const success = dispatch(userLogin(email, password));
 
       if (success) {
         // Redirect to '/User' upon successful login
