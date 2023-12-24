@@ -6,36 +6,30 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
 import { editUserName, getUserProfile } from "../../components/login-form/userActions";
-
-
-
+import { Navigate } from "react-router-dom";
 
 function User() {
   
   const dispatch = useDispatch();
-  const userProfile = useSelector((state) => state.userReducer.userProfile);
-  const [newFirstName, setNewFirstName] = useState("");
-  const [newLastName, setNewLastName] = useState("");
+  const userProfile = useSelector((state) => state.user.userProfile);
+  const [newUserName, setNewUserName] = useState(userProfile.userName);
+  const token = sessionStorage.getItem("token");
 
   useEffect(() => {
       dispatch(getUserProfile());
   }, [dispatch]);
 
-  const handleEditSave = async () => {
-      if (!userProfile) {
-          // Handle userProfile not being available yet
-          console.log(userProfile,"Cannot access user");
-          return;
-      }
+  if (!token) {
+    return <Navigate to="/SignIn" />;
+  }
 
-      const fullName = {
-          firstName: newFirstName || userProfile.firstName,
-          lastName: newLastName || userProfile.lastName,
-      };
-      await dispatch(editUserName(fullName));
-      await dispatch(getUserProfile());
-      setNewFirstName("");
-      setNewLastName("");
+  const handleEditSave = async () => {
+    if (!userProfile) {
+      return;
+    }
+    await dispatch(editUserName(newUserName));
+    await dispatch(getUserProfile());
+    setNewUserName("");
   };
 
   const handleEdit = () => {
@@ -47,33 +41,25 @@ function User() {
       document.getElementById("edit-button").style.display = "initial";
       document.getElementById("edit-section").style.display = "none";
   }
-    
+
   return (
   <div>
     <Header />
     <main className="main bg-dark">
       <div className="header">
-        <h1>Welcome back<br /><span id="fullName">{"userFullName"}!</span></h1>
+        <h1>Welcome back<br /><span id="fullName">{userProfile.userName} !</span></h1>
         <button className="edit-button" id="edit-button" type="button" onClick={handleEdit}>Edit Name</button>
         
         <div id="edit-section">
                 <form name="edit">
                     <div className="profil-input-wrapper">
-                        <label htmlFor="firstName">First name:</label>
+                        <label htmlFor="userName">User name:</label>
                         <input
                             type="text"
-                            id="firstName"
-                            value={newFirstName || userProfile.firstName}
-                            onChange={(e) => setNewFirstName(e.target.value)}
-                        />
-                    </div>
-                    <div className="profil-input-wrapper">
-                        <label htmlFor="lastName">Last name:</label>
-                        <input
-                            type="text"
-                            id="lastName"
-                            value={newLastName || userProfile.lastName}
-                            onChange={(e) => setNewLastName(e.target.value)}
+                            id="userName"
+                            value={newUserName}
+                            onChange={(e) => setNewUserName(e.target.value)}
+                            placeholder={userProfile.userName}
                         />
                     </div>
                 </form>
@@ -83,7 +69,6 @@ function User() {
           </div>
         </div>
       </div>
-
       <h2 className="sr-only">Accounts</h2>
       <section className="account">
         <div className="account-content-wrapper">
@@ -122,4 +107,3 @@ function User() {
 }
 
 export default User;
-

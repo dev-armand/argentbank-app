@@ -1,32 +1,33 @@
 // Login component
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { userLogin } from './userActions';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Get the navigate function
-
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const token = sessionStorage.getItem("token");
+
+  useEffect(() => {
+    if (token) {
+      navigate('/User');
+    }
+  }, [token, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(email, password);
     try {
       const success = dispatch(userLogin(email, password));
-
       if (success) {
-        // Redirect to '/User' upon successful login
         navigate('/User');
       } else {
-        // Handle login failure
         console.error('Login failed');
       }
     } catch (error) {
       console.error('Login failed:', error);
-      // Handle other errors if needed
     }
   };
 

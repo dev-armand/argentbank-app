@@ -1,5 +1,3 @@
-import { useNavigate } from "react-router-dom";
-
 export const USER_LOGIN_SUCCESS = "USER_LOGIN_SUCCESS";
 export const USER_LOGIN_FAILED = "USER_LOGIN_FAILED";
 export const USER_LOGOUT = "USER_LOGOUT";
@@ -71,7 +69,6 @@ export const getUserProfile = () => {
     try {
       const token = sessionStorage.getItem("token");
 
-      // Manage if token is not available
       if (!token) {
         return;
       }
@@ -93,7 +90,6 @@ export const getUserProfile = () => {
         // Dispatch actions with data fetched
         dispatch({ type: "USER_LOGIN_SUCCESS", payload: data.body });
       } else {
-        // Manage if response is not ok
         console.error(
           "Server response not OK:",
           response.status,
@@ -111,12 +107,11 @@ export const getUserProfile = () => {
   };
 };
 
-export const editUserName = (newUserName) => {
+export const editUserName = (newUserName,newFirstName, newLastName) => {
   return async (dispatch) => {
     try {
       const token = sessionStorage.getItem("token");
 
-      // Manage if token is not available
       if (!token) {
         return;
       }
@@ -129,16 +124,17 @@ export const editUserName = (newUserName) => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userName: newUserName }),
+          body: JSON.stringify({ userName: newUserName, firstName: newFirstName, lastName: newLastName  }),
         }
       );
+      console.log("edit user name:", newUserName ,newFirstName, newLastName);
+
 
       if (response.ok) {
         const data = await response.json();
         // Dispatch actions with data fetched
         dispatch({ type: "USER_LOGIN_SUCCESS", payload: data.body });
       } else {
-        // Manage if response is not ok
         console.error(
           "Server response not OK:",
           response.status,
